@@ -4,12 +4,12 @@ import { AuthGuard } from './components/AuthGuard';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
 import { Register } from './pages/Register';
 import { Summary } from './pages/Summary';
 import { Tours } from './pages/Tours';
-import { Profile } from './pages/Profile';
-import { FAQ } from './pages/complements/FAQ';
 import { Careers } from './pages/complements/Careers';
+import { FAQ } from './pages/complements/FAQ';
 
 function App() {
   return (
@@ -31,6 +31,14 @@ function App() {
             }
           />
           <Route
+            path="register"
+            element={
+              <AuthGuard>
+                <Register />
+              </AuthGuard>
+            }
+          />
+          <Route
             path="tours"
             element={
               <AuthGuard>
@@ -38,7 +46,9 @@ function App() {
               </AuthGuard>
             }
           />
+
           <Route
+
             path="summary"
             element={
               <AuthGuard>
