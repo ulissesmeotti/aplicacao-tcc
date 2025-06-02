@@ -1,5 +1,6 @@
 // Hook para buscar hotéis com base em parâmetros de localização, datas e ocupação.
 import { useState } from 'react';
+import defaultHotelImage from '../images/icone-hotel.jpg';
 import { hotelsAPI } from '../lib/hotels';
 
 interface Hotel {
@@ -16,7 +17,7 @@ interface Hotel {
   images: string[];
 }
 
-const DEFAULT_HOTEL_IMAGE = 'icone-hotel.jpg';
+const DEFAULT_HOTEL_IMAGE = defaultHotelImage;
 
 export function useHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);

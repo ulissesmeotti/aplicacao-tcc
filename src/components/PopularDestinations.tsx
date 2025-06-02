@@ -1,44 +1,49 @@
 import { MapPin } from 'lucide-react';
+import curitiba from '../images/img-curitiba.jpg';
+import florianopolis from '../images/img-florianopolis.jpg';
+import fozDeIguacu from '../images/img-fozdeiguacu.jpg';
+import rioDeJaneiro from '../images/img-riodejaneiro.jpg';
+import salvador from '../images/img-salvador.jpg';
+import saoPaulo from '../images/img-saopaulo.jpg';
 
 const destinations = [
   {
     name: 'Rio de Janeiro',
     state: 'RJ',
-    image: 'img-riodejaneiro.jpg',
-    description: 'Cidade maravilhosa com praias deslumbrantes e o Cristo Redentor'
+    image: rioDeJaneiro,
+    description: 'Cidade maravilhosa com praias deslumbrantes e o Cristo Redentor',
   },
   {
     name: 'São Paulo',
     state: 'SP',
-    image: 'img-saopaulo.jpg',
-    description: 'A maior cidade do Brasil, centro financeiro e cultural'
+    image: saoPaulo,
+    description: 'A maior cidade do Brasil, centro financeiro e cultural',
   },
   {
     name: 'Salvador',
     state: 'BA',
-    image: 'img-salvador.jpg',
-    description: 'Rica história, cultura afro-brasileira e praias paradisíacas'
+    image: salvador,
+    description: 'Rica história, cultura afro-brasileira e praias paradisíacas',
   },
   {
     name: 'Foz do Iguaçu',
     state: 'PR',
-    image: 'img-fozdeiguacu.jpg',
-    description: 'Cataratas majestosas e uma das maravilhas naturais do mundo'
+    image: fozDeIguacu,
+    description: 'Cataratas majestosas e uma das maravilhas naturais do mundo',
   },
   {
     name: 'Florianópolis',
     state: 'SC',
-    image: 'img-florianopolis.jpg',
-    description: 'Ilha da Magia com 42 praias paradisíacas'
+    image: florianopolis,
+    description: 'Ilha da Magia com 42 praias paradisíacas',
   },
   {
     name: 'Curitiba',
     state: 'PR',
-    image: 'img-curitiba.jpg',
-    description: 'Cidade modelo em planejamento urbano e qualidade de vida'
-  }
+    image: curitiba,
+    description: 'Cidade modelo em planejamento urbano e qualidade de vida',
+  },
 ];
-
 export function PopularDestinations() {
   return (
     <div className="py-16 bg-gray-50">
