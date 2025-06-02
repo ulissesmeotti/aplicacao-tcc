@@ -16,7 +16,7 @@ interface Hotel {
   images: string[];
 }
 
-const DEFAULT_HOTEL_IMAGE = 'images/icone-hotel.jpg';
+const DEFAULT_HOTEL_IMAGE = 'icone-hotel.jpg';
 
 export function useHotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);

@@ -4,37 +4,37 @@ const destinations = [
   {
     name: 'Rio de Janeiro',
     state: 'RJ',
-    image: 'images/img-riodejaneiro.jpg',
+    image: 'img-riodejaneiro.jpg',
     description: 'Cidade maravilhosa com praias deslumbrantes e o Cristo Redentor'
   },
   {
     name: 'São Paulo',
     state: 'SP',
-    image: 'images/img-saopaulo.jpg',
+    image: 'img-saopaulo.jpg',
     description: 'A maior cidade do Brasil, centro financeiro e cultural'
   },
   {
     name: 'Salvador',
     state: 'BA',
-    image: 'images/img-salvador.jpg',
+    image: 'img-salvador.jpg',
     description: 'Rica história, cultura afro-brasileira e praias paradisíacas'
   },
   {
     name: 'Foz do Iguaçu',
     state: 'PR',
-    image: 'images/img-fozdeiguacu.jpg',
+    image: 'img-fozdeiguacu.jpg',
     description: 'Cataratas majestosas e uma das maravilhas naturais do mundo'
   },
   {
     name: 'Florianópolis',
     state: 'SC',
-    image: 'images/img-florianopolis.jpg',
+    image: 'img-florianopolis.jpg',
     description: 'Ilha da Magia com 42 praias paradisíacas'
   },
   {
     name: 'Curitiba',
     state: 'PR',
-    image: 'images/img-curitiba.jpg',
+    image: 'img-curitiba.jpg',
     description: 'Cidade modelo em planejamento urbano e qualidade de vida'
   }
 ];
