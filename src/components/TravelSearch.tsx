@@ -54,42 +54,54 @@ export function TravelSearch() {
   };
 
   const handleSearch = async () => {
-    if (!selectedCity || !selectedDepartureCity || !formData.startDate || !formData.endDate) {
-      toast.error('Por favor, preencha todos os campos');
-      return;
-    }
+  if (!selectedCity || !selectedDepartureCity || !formData.startDate || !formData.endDate) {
+    toast.error('Por favor, preencha todos os campos');
+    return;
+  }
 
-    const departureCode = getCityAirportCode(selectedDepartureCity.name);
-    const arrivalCode = getCityAirportCode(selectedCity.name);
+  const departureCode = getCityAirportCode(selectedDepartureCity.name);
+  const arrivalCode = getCityAirportCode(selectedCity.name);
 
-    if (!departureCode || !arrivalCode) {
-      toast.error('Aeroporto não encontrado para uma das cidades selecionadas');
-      return;
-    }
+  if (!departureCode || !arrivalCode) {
+    toast.error('Aeroporto não encontrado para uma das cidades selecionadas');
+    return;
+  }
 
-    setShowResults(true);
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(formData.startDate) || !dateRegex.test(formData.endDate)) {
+    toast.error('Datas devem estar no formato AAAA-MM-DD');
+    return;
+  }
 
-    try {
-      await searchFlights({
-        departureCity: departureCode,
-        arrivalCity: arrivalCode,
-        date: formData.startDate,
-        adults: formData.adults,
-        children: formData.children
-      });
+  setShowResults(true);
 
-      await searchHotels({
-        cityName: selectedCity.name,
-        checkInDate: formData.startDate,
-        checkOutDate: formData.endDate,
-        adults: formData.adults,
-        children: formData.children
-      });
-    } catch (error) {
-      console.error('Error during search:', error);
-      toast.error('Ocorreu um erro ao buscar opções de viagem');
-    }
-  };
+  try {
+    await searchFlights({
+      departureCity: departureCode,
+      arrivalCity: arrivalCode,
+      date: formData.startDate,
+      returnDate: formData.endDate,
+      adults: formData.adults,
+      children: formData.children
+    });
+
+    await searchHotels({
+      cityName: selectedCity.name,
+      checkInDate: formData.startDate,
+      checkOutDate: formData.endDate,
+      adults: formData.adults,
+      children: formData.children
+    });
+  } catch (error) {
+    console.error('Error during search:', error);
+    toast.error('Ocorreu um erro ao buscar opções de viagem');
+  }
+};
+
+
+
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

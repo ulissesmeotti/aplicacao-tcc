@@ -39,6 +39,8 @@ class FlightsAPI {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json'
         },
+        
+        
         params: {
           departureCity: departureCode,
           arrivalCity: arrivalCode,
@@ -47,7 +49,7 @@ class FlightsAPI {
           children: params.children || 0
         }
       });
-
+      console.log(data);  
       if (!data?.flights?.length) {
         return [];
       }

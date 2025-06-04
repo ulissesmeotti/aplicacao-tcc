@@ -1,140 +1,108 @@
-import { createClient } from 'npm:@supabase/supabase-js@2.39.7'
-import axios from 'npm:axios@1.6.7'
+import axios from 'axios';
 
-const SEARCHAPI_KEY = 'gpKyTTYqXuC4qS1cZpyY5odC'
-const SEARCHAPI_URL = 'https://www.searchapi.io/api/v1/search'
+const SUPABASE_FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-flights`;
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Content-Type': 'application/json'
+interface FlightSearchParams {
+  departure_id: string;
+  arrival_id: string;
+  outbound_date: string;
+  return_date?: string;
+  adults?: string;
+  children?: string;
+  currency?: string;
+  hl?: string;
+  flight_type?: string;
+  engine?: string;
 }
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { 
-      status: 200,
-      headers: corsHeaders 
-    })
+export const searchFlights = async (params: FlightSearchParams) => {
+  const { 
+    engine = 'google_flights',
+    flight_type = 'round_trip',
+    departure_id,
+    arrival_id,
+    outbound_date,
+    return_date,
+    adults = '1',
+    children = '0',
+    currency = 'BRL',
+    hl = 'en'
+  } = params;
+
+  if (!departure_id || !arrival_id || !outbound_date) {
+    throw new Error('Missing required parameters: departure_id, arrival_id, and outbound_date are required');
   }
 
-  const authHeader = req.headers.get('authorization')
-  if (!authHeader) {
-    return new Response(
-      JSON.stringify({ 
-        error: 'Missing authorization header'
-      }),
-      { 
-        status: 401,
-        headers: corsHeaders
-      }
-    )
+  if (departure_id.length !== 3 || arrival_id.length !== 3) {
+    throw new Error('Invalid airport codes: Airport codes must be 3 letters (e.g., GRU, GIG)');
   }
+
+  const searchParams = {
+    engine,
+    flight_type,
+    departure_id,
+    arrival_id,
+    outbound_date,
+    currency,
+    hl
+  };
+
+  if (return_date) {
+    searchParams.return_date = return_date;
+  }
+
+  if (adults && adults !== '1') {
+    searchParams.adults = adults;
+  }
+  if (children && children !== '0') {
+    searchParams.children = children;
+  }
+
+  console.log('Supabase function request params:', searchParams);
 
   try {
-    const url = new URL(req.url);
-    const params = Object.fromEntries(url.searchParams);
-    
-    let body = {};
-    if (req.method === 'POST') {
-      body = await req.json();
-    }
-
-    const { 
-      engine = 'google_flights',
-      flight_type = 'round_trip',
-      departure_id,
-      arrival_id,
-      outbound_date,
-      return_date = '2025-06-04'
-    } = { ...params, ...body };
-
-    console.log('Request parameters:', { 
-      engine,
-      flight_type,
-      departure_id,
-      arrival_id,
-      outbound_date,
-      return_date
+    const response = await axios.get(SUPABASE_FUNCTION_URL, {
+      params: searchParams,
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 30000
     });
 
-    if (!departure_id || !arrival_id) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Missing required parameters',
-          details: { departure_id, arrival_id }
-        }),
-        { 
-          status: 400,
-          headers: corsHeaders
-        }
-      )
+    console.log('Supabase function response status:', response.status);
+    console.log('Supabase function response data keys:', Object.keys(response.data || {}));
+
+    if (!response.data) {
+      throw new Error('No data received from flight search API');
     }
 
-    const response = await axios.get(SEARCHAPI_URL, {
-      params: {
-        engine,
-        flight_type,
-        departure_id,
-        arrival_id,
-        outbound_date,
-        return_date,
-        currency: 'BRL',
-        api_key: SEARCHAPI_KEY
-      }
-    });
+    if (response.data.error) {
+      throw new Error(response.data.error.message || 'Unknown API error');
+    }
 
-    console.log('SearchAPI response status:', response.status);
-
-    return new Response(
-      JSON.stringify(response.data),
-      { 
-        status: 200,
-        headers: corsHeaders
-      }
-    )
-
+    return response.data;
   } catch (error) {
     console.error('Search flights error:', error);
 
     if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('Request timeout: The flight search request timed out. Please try again.');
+      }
+
       if (error.response?.status === 429) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Rate limit exceeded',
-            message: 'Too many requests. Please try again later.'
-          }),
-          { 
-            status: 429,
-            headers: corsHeaders
-          }
-        )
+        throw new Error('Rate limit exceeded: Too many requests. Please try again later.');
       }
       
       if (error.response?.status === 401) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Authentication failed',
-            message: 'Invalid API key'
-          }),
-          { 
-            status: 401,
-            headers: corsHeaders
-          }
-        )
+        throw new Error('Authentication failed: Invalid Supabase anonymous key');
+      }
+
+      if (error.response?.status === 400) {
+        throw new Error(error.response.data?.message || 'Invalid request parameters');
       }
     }
 
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
-      }),
-      { 
-        status: 500,
-        headers: corsHeaders
-      }
-    )
+    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
   }
-})
+};
